@@ -144,7 +144,7 @@ Cuadro_1<-merge(Cuadro_1, pH_t, all = TRUE)
 Cuadro_1
 #------------------------------------------------
 write.xlsx(Cuadro_1, "Results/Table. Three-way ANOVA.xlsx",
-           sheetName="Cuadro 1",col.names=TRUE,
+           sheetName="Table 1",col.names=TRUE,
            row.names=FALSE, append=FALSE,
            showNA=TRUE, password=NULL)
 #------------------------------------------------
