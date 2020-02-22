@@ -30,7 +30,6 @@ This work was designed by a project in R, for proper operation must download all
 To the processing of the database and execution of all statistical and graphical analysis, all the following R packages must be installed.
 Package needed from the beginning and end of the WTS-project:
 
-```
 - readxl
 - openxlsx
 - Rmisc
@@ -49,7 +48,7 @@ Package needed from the beginning and end of the WTS-project:
 - ggplot2
 - grid
 - gridExtra
-```
+
 
 ## Function
 
