@@ -2,7 +2,7 @@
 
 One Paragraph of project description goes here
 
-![Test Image 4](https://https://github.com/JPASTORPM/WTS-project/.png)
+![Fig. Spatial dynamics pf ORP](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20ORP.png)
 
 ## Getting Started
 
