@@ -21,38 +21,39 @@ This work was designed by a project in R, for proper operation must download all
 
 ### Prerequisites
 
-R 3.6.1 version
-RStudio version 1.2.5019
+- R 3.6.1 version
+- RStudio version 1.2.5019
 
 
 ### Installing
 
-The following packages must be installed:
+To the processing of the database and execution of all statistical and graphical analysis, all the following R packages must be installed.
+Package needed from the beginning and end of the WTS-project:
 
 ```
-library("readxl")
-library(openxlsx)
-library(Rmisc)
-library(fields) #Source: https://www.rdocumentation.org/packages/fields/versions/9.8-6/topics/interp.surface
-library(plot3D) #Source: https://rpubs.com/yoshio/95844
-library(yarrr)
-library(broom)
-library(car)
-library(lsmeans)
-library(multcompView)
-library(multcomp)
-library(dplyr)
-library(GGally)
-library(factoextra)
-library(cowplot)
-library(ggplot2)
-library(grid)
-library(gridExtra)
+- readxl
+- openxlsx
+- Rmisc
+- fields
+- plot3D
+- yarrr
+- broom
+- car
+- lsmeans
+- multcompView
+- multcomp
+- dplyr
+- GGally
+- factoextra
+- cowplot
+- ggplot2
+- grid
+- gridExtra
 ```
 
-## Running the tests
+## Function
 
-Explain what these tests test and why
+Function for execution of the spatial distribution of the parameter.
 
 ```
 fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig.name){
@@ -167,11 +168,19 @@ ORP<-fun.plot3d(data= dat, var1=dat$ORP[dat$Tratamiento=='Control'],var2=dat$ORP
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [fields](https://www.rdocumentation.org/packages/fields) - Bilinear interpolations between the piezometers
+* [plot3D](https://maven.apache.org/) - Spatial distribution (plot)
 
 
 ## Authors
 
-* **Junior Pastor Pérez Molina** - *Initial work* - [JPASTORPM](https://github.com/JPASTORPM)
+* **Junior Pastor Pérez-Molina** - *Laboratorio de Ecología Funcional y Ecosistemas Tropicales (LEFET), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599) - [GitHub](https://github.com/JPASTORPM)
+* **Carola Scholz** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Ana Abarca Méndez** - *Laboratorio de Ecología Funcional y Ecosistemas Tropicales (LEFET), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Leandro Araya Leitón** - *Laboratorio de Ecología Funcional y Ecosistemas Tropicales (LEFET), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Jeslyn Carranza Chaves** - *Laboratorio de Ecología Funcional y Ecosistemas Tropicales (LEFET), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Addy Echevarría Figueroa** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Mariana Elizondo Blanco** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Rachel Ardón Rivera** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Sofía Flores Aguilar** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
+* **Catalina Solís Calderón** - *Laboratorio Nacional de Aguas, Área de Microbiología, Instituto Costarricense de Acueductos y Alcantarillados (AyA), Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599)
