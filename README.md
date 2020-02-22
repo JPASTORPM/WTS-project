@@ -1,10 +1,16 @@
 # Wastewater Treatment System (WTS) project
 
-One Paragraph of project description goes here
+This WTS-project in R aimed to evaluate the spatial dynamics of some of the physicochemical parameters in an artificial wetland system of sub-superficial flow of _Pennisetum alopecuroides_ (Pennisetum) and a control (non-plants). The purpose is to provide a simple example of an analysis of the spatial dynamics through the use of the R programming language. Each of the cells (Pennisetum and control) had 12 piezometers, organized in three columns and four rows with a separation distance of 3.25m and 4.35m, respectively. It was measured in each of the piezometers the oxidation-reduction potential (_ORP_), dissolved oxygen (_OD_), _conductivity_, _pH_ and water _temperature_ (n = 167). The monitoring of the spatial dynamics of these parameters and other variables could show us if there is any obstruction of the flow and/or possible reduction of the removal by the plants. An open-source repository of R was provided.
+
 
 ![Fig. Spatial dynamics pf ORP](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20ORP.png)
 
 _Spatial distribution of ORP levels within the systems (Control and Pennisetum) based on bilinear interpolations between the piezometers. Colour gradient and contour lines indicate parameter intensity from low (blue) to high (red), and white crosses indicate the position of the piezometers; Boxplots show the comparison between rows and columns of the position of the piezometers, where, box marks Q1 and Q3, the black line is median (Q2), lines shown maximum and minimum values, and circles are values outliers with three times greater than the mean; Subplot with colour gradient indicate flow direction in y axis_
+
+![Fig. Spatial dynamics pf ORP](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20Conductivity.png)
+
+_Spatial distribution of water conductivity levels within the systems (Control and Pennisetum) based on bilinear interpolations between the piezometers. See legend explanation in the previous figure._
+
 
 ## Getting Started
 
