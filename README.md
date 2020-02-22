@@ -4,6 +4,8 @@ One Paragraph of project description goes here
 
 ![Fig. Spatial dynamics pf ORP](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20ORP.png)
 
+_*Fig. 3.* Distribution of ORP levels within the systems (Control and Pennisetum) based on quadratic interpolations between the piezometers. Colour gradient and contour lines indicate parameter intensity from low (blue) to high (red), and white crosses indicate the position of the piezometers; Boxplots show the comparison between rows and columns of the position of the piezometers, where, box marks Q1 and Q3, the black line is median (Q2), lines shown maximum and minimum values, and circles are values outliers with three times greater than the mean; Subplot with colour gradient indicate flow direction in y axis. KW: Krukall-Wallis; p: probability; equal letters indicate no statistically significant difference between the position of the piezometers in rows (Bonferroni, p>0.05)._
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
