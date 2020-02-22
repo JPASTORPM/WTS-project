@@ -16,57 +16,154 @@ This WTS-project in R aimed to evaluate the spatial dynamics of some of the phys
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+This work was designed by a project in R, for proper operation must download all the "WTS-project" uncompress folder and then open the project in R by double clip in **WTS-project.R**, then load the **WTS-script** in _Script_ folder, by default all database and folders will be linked, it will not be necessary to change any work address (_i.e._ _C:\Users\WTS-project_).
+
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+R 3.6.1 version
+RStudio version 1.2.5019
 
-```
-Give examples
-```
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+The following packages must be installed:
 
 ```
-Give the example
+library("readxl")
+library(openxlsx)
+library(Rmisc)
+library(fields) #Source: https://www.rdocumentation.org/packages/fields/versions/9.8-6/topics/interp.surface
+library(plot3D) #Source: https://rpubs.com/yoshio/95844
+library(yarrr)
+library(broom)
+library(car)
+library(lsmeans)
+library(multcompView)
+library(multcomp)
+library(dplyr)
+library(GGally)
+library(factoextra)
+library(cowplot)
+library(ggplot2)
+library(grid)
+library(gridExtra)
 ```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
 Explain what these tests test and why
 
 ```
-Give an example
+fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig.name){
+  #-------------------
+  sum = summarySE(data, measurevar= Variable, groupvars=c("Tratamiento", "Punto"), na.rm=TRUE)
+  sum<-sum[,c(1,2,3,4,6,7)]
+  sum<-data.frame(Variable, sum)
+  names(sum)<-c("Variable","Tratamiento","Punto","N","Mean","S.E.","C.I.95")
+  sum
+  sum1<-matrix(sum$Mean[sum$Tratamiento=="Control"],nrow = 3, ncol = 4)
+  sum2<-matrix(sum$Mean[sum$Tratamiento=="Pennisetum"],nrow = 3, ncol = 4)
+  #-------------------
+  pdf(paste("Results/",fig.name,".pdf"), width=10, height=10)
+  layout(matrix(c(1,1, 2,2, 3,3, 4,4,
+                  1,1, 2,2, 3,3, 4,4, 
+                  7,7, 5,5, 8,8, 6,6,
+                  0,0, 0,0, 0,0, 0,0,
+                  0,0, 0,0, 0,0, 0,0), nrow = 5, byrow=T))
+  pm <- par("mfrow")
+  par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(1.5,4,1.5,1))
+  boxplot(var1 ~ dat$Fila[dat$Tratamiento=="Control"], xlab=Variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
+  #-------------------
+  x=c(2.70, 5.95, 9.2)
+  y=c(2.8, 7.15, 11.5, 15.85)
+  #-------------------
+  par(xpd = TRUE, mgp = c(1.5,0.5,0), mar = c(1.5,0.5,2,2.5)) #contour = list(lwd = 2, col = jet.col(11))
+  obj<- list( x= x, y=y, z= sum1)
+  set.seed(123)
+  grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
+  m<-interp.surface.grid(obj, grid.list)
+  image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = tratamiento1, clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
+  grid <- mesh(dat$Columna, dat$Fila)
+  points(grid, pch=3, lwd=2, cex=1, col="White")
+  par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(1.5,4,1.5,1))
+  boxplot(var2 ~ dat$Fila[dat$Tratamiento=="Pennisetum"],  xlab=Variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
+  par(xpd = TRUE, mgp = c(1.5,0.5,0), mar = c(1.5,0.5,2,2.5)) #contour = list(lwd = 2, col = jet.col(11))
+  obj<- list( x= x, y=y, z= sum2)
+  set.seed(123)
+  grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
+  m<-interp.surface.grid(obj, grid.list)
+  image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = "Pennisetum", clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
+  grid <- mesh(dat$Columna, dat$Fila)
+  points(grid, pch=3, lwd=2, cex=1, col="White")
+  
+  par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
+  boxplot(var1 ~ dat$Columna[dat$Tratamiento=="Control"],  ylab=Variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
+  
+  
+  par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
+  boxplot(var2 ~ dat$Columna[dat$Tratamiento=="Pennisetum"],  ylab=Variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
+  
+  #------------------------------------------------
+  par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(0,0,0,0)) #contour = list(lwd = 2, col = jet.col(11))
+  obj<- list( x= x, y=y, z= sum1)
+  set.seed(123)
+  grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
+  m<-interp.surface.grid(obj, grid.list)
+  x <- 1 : nrow(m$z)
+  y <- 1 : ncol(m$z)
+  panelfirst <- function(pmat) {
+    XY <- trans3D(x = rep(1, ncol(m$z)), y = y,
+                  z = m$z[50,], pmat = pmat)
+    scatter2D(XY$x, XY$y, colvar = m$z[50,],
+              type = "l", lwd = 3, add = TRUE, colkey = FALSE)
+    XY <- trans3D(x = x, y = rep(ncol(m$z), nrow(m$z)),
+                  z = m$z[,50], pmat = pmat)
+    scatter2D(XY$x, XY$y, colvar = m$z[,50],
+              type = "l", lwd = 3, add = TRUE, colkey = FALSE)
+  }
+  pmat <- persp3D(z = m$z, x = x, y = y, scale = FALSE, theta = 30,
+                  expand = 0.1, panel.first = panelfirst, colkey = FALSE,contour=FALSE) # Scale grays use "col=hcl.colors(100, "Grays")"
+  XY <- trans3D(x = rep(50, ncol(m$z)), y = y, z = m$z[50,],pmat = pmat)
+  lines(XY, lwd = 1, lty = 3)
+  XY <- trans3D(x = x, y = rep(50, nrow(m$z)), z = m$z[,50], pmat = pmat)
+  lines(XY, lwd = 1, lty = 3)
+  
+  #-------------------
+  x=c(2.70, 5.95, 9.2)
+  y=c(2.8, 7.15, 11.5, 15.85)
+  #-------------------
+  
+  obj<- list( x= x, y=y, z= sum2)
+  set.seed(123)
+  grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
+  m<-interp.surface.grid(obj, grid.list)
+  x <- 1 : nrow(m$z)
+  y <- 1 : ncol(m$z)
+  panelfirst <- function(pmat) {
+    XY <- trans3D(x = rep(1, ncol(m$z)), y = y,
+                  z = m$z[50,], pmat = pmat)
+    scatter2D(XY$x, XY$y, colvar = m$z[50,],
+              type = "l", lwd = 3, add = TRUE, colkey = FALSE)
+    XY <- trans3D(x = x, y = rep(ncol(m$z), nrow(m$z)),
+                  z = m$z[,50], pmat = pmat)
+    scatter2D(XY$x, XY$y, colvar = m$z[,50],
+              type = "l", lwd = 3, add = TRUE, colkey = FALSE)
+  }
+  pmat <- persp3D(z = m$z, x = x, y = y, scale = FALSE, theta = 30,
+                  expand = 0.1, panel.first = panelfirst, colkey = FALSE,contour=FALSE) # Scale grays use "col=hcl.colors(100, "Grays")"
+  XY <- trans3D(x = rep(50, ncol(m$z)), y = y, z = m$z[50,], pmat = pmat)
+  lines(XY, lwd = 1, lty = 3)
+  XY <- trans3D(x = x, y = rep(50, nrow(m$z)), z = m$z[,50], pmat = pmat)
+  lines(XY, lwd = 1, lty = 3)
+  #------------------------------------------------
+  dev.off()
+  return(sum)
+}
+#------------------------------------------------
+ORP<-fun.plot3d(data= dat, var1=dat$ORP[dat$Tratamiento=='Control'],var2=dat$ORP[dat$Tratamiento=='Pennisetum'],tratamiento1= "Control", tratamiento2= "Pennisetum", Variable="ORP", fig.name="Fig. ORP")
+#------------------------------------------------
 ```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
@@ -74,26 +171,7 @@ Add additional notes about how to deploy this on a live system
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
 ## Authors
 
 * **Junior Pastor Pérez Molina** - *Initial work* - [JPASTORPM](https://github.com/JPASTORPM)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
