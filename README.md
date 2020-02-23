@@ -181,5 +181,5 @@ ORP<-fun.plot3d(data= dat, var1=dat$ORP[dat$Tratamiento=='Control'],var2=dat$ORP
 * **Addy Echevarría Figueroa** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0001-9596-5662)
 * **Mariana Elizondo Blanco** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-8408-1543)
 * **Rachel Ardón Rivera** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-9642-3176)
-* **Sofía Flores Aguilar** - *Biology student participating in LEFET* - [ORCID](https://orcid.or)
+* **Sofía Flores Aguilar** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-1736-3655)
 * **Catalina Solís Calderón** - *Laboratorio Nacional de Aguas, Área de Microbiología, Instituto Costarricense de Acueductos y Alcantarillados (AyA), Costa Rica* - [ORCID](https://orcid.or)
