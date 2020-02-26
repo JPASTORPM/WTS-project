@@ -17,26 +17,23 @@ cat("\014")     # Remove  console scripts
 
 
 #------------------------------------------------
-# Packages
+# Packages: Automated Package Installation
 #------------------------------------------------
-library("readxl")
-library(openxlsx)
-library(Rmisc)
-library(fields) #Source: https://www.rdocumentation.org/packages/fields/versions/9.8-6/topics/interp.surface
-library(plot3D) #Source: https://rpubs.com/yoshio/95844
-library(yarrr)
-library(broom)
-library(car)
-library(lsmeans)
-library(multcompView)
-library(multcomp)
-library(dplyr)
-library(GGally)
-library(factoextra)
-library(cowplot)
-library(ggplot2)
-library(grid)
-library(gridExtra)
+# install devtools, if it is not installed on your computer
+if (!"devtools" %in% installed.packages()[,"Package"]) install.packages("devtools")
+
+library(devtools)
+
+pkg <- c("ggplot2","readxl", "openxlsx", "Rmisc",
+       "fields","plot3D","yarrr","broom","car","lsmeans",
+       "multcompView","multcomp","dplyr","GGally",
+       "factoextra","cowplot","ggplot2","grid","gridExtra")
+
+out <- lapply(pkg, function(y) {
+  if (!y %in% installed.packages()[, "Package"]) 
+    install.packages(y)
+  require(y, character.only = T)
+})
 #------------------------------------------------
 
 
@@ -535,6 +532,7 @@ error.bar.vertical(sum$Time[sum$Tratamiento=="Salida Pennisetum"], sum$Mean[sum$
 #------------------------------------------------
 dev.off()
 #------------------------------------------------
+
 
 
 # The end
