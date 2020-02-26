@@ -2,11 +2,19 @@
 
 This WTS-project in _R_ aimed to evaluate the spatial distribuction of some of the physicochemical parameters in an constructed wetland system for wastewater treatment of sub-superficial flow of _Pennisetum alopecuroides_ (Pennisetum) and a control (unplanted). The purpose is to provide a simple example of an analysis of the spatial dynamics through the use of the R programming language. Each of the cells (Pennisetum and control) had 12 piezometers, organized in three columns and four rows with a separation distance of 3.25m and 4.35m, respectively. It was measured in each of the piezometers the _oxidation-reduction potential (ORP)_, _dissolved oxygen (OD)_, _conductivity_, _pH_ and _water temperature_ (_n_ = 167). The monitoring of the spatial distribution of these parameters and other variables could show us if there is any obstruction of the flow and/or possible reduction of the removal by the plants. An open-source repository of R was provided.
 
+
+### Constructed wetland of the horizontal sub-superficial flow (CW-HSF)
+
+![Fig. Scheme](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20Scheme.png)
+
+> _Scheme of Constructed wetland of the horizontal sub-superficial flow for wastewater treatment (A: Pennisetum and Control). Images of the substrate and piezometers in both systems (B-C: Pennisetum; and D-E: Control)._
+
+
 ### Exemples
 
 ![Fig. Spatial dynamics pf ORP](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20ORP.png)
 
-> _Spatial distribution of ORP levels within the systems (Control and Pennisetum) based on bilinear interpolations between the piezometers. Colour gradient and contour lines indicate parameter intensity from low (blue) to high (red), and white crosses indicate the position of the piezometers; Boxplots show the comparison between rows and columns of the position of the piezometers, where, box marks Q1 and Q3, the black line is median (Q2), lines shown maximum and minimum values, and circles are values outliers with three times greater than the mean; Subplot with colour gradient indicate flow direction in y axis_
+> _Spatial distribution of ORP levels within the systems (Control and Pennisetum) based on bilinear interpolations between the piezometers. Colour gradient and contour lines indicate parameter intensity from low (blue) to high (red), and white crosses indicate the position of the piezometers; Boxplots show the comparison between rows and columns of the position of the piezometers, where, box marks Q1 and Q3, the black line is median (Q2), lines shown maximum and minimum values, and circles are values outliers with three times greater than the mean; Subplot with colour gradient indicate flow direction in y axis._
 
 
 ![Fig. Spatial dynamics pf ORP](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20Conductivity.png)
@@ -25,30 +33,26 @@ This work was designed by a project in R, for proper operation must download all
 - RStudio version 1.2.5019
 
 
-### Installing
+### Packages: Automated Package Installation
 
 To the processing of the database and execution of all statistical and graphical analysis, all the following R packages must be installed.
-Package needed from the beginning and end of the WTS-project:
+Package needed from the beginning and end of the WTS-project
 
-- readxl
-- openxlsx
-- Rmisc
-- fields
-- plot3D
-- yarrr
-- broom
-- car
-- lsmeans
-- multcompView
-- multcomp
-- dplyr
-- GGally
-- factoextra
-- cowplot
-- ggplot2
-- grid
-- gridExtra
+```
+if (!"devtools" %in% installed.packages()[,"Package"]) install.packages("devtools")
+library(devtools)
 
+pkg <- c("ggplot2","readxl", "openxlsx", "Rmisc",
+       "fields","plot3D","yarrr","broom","car","lsmeans",
+       "multcompView","multcomp","dplyr","GGally",
+       "factoextra","cowplot","ggplot2","grid","gridExtra")
+
+out <- lapply(pkg, function(y) {
+  if (!y %in% installed.packages()[, "Package"]) 
+    install.packages(y)
+  require(y, character.only = T)
+})
+```
 
 ## Function
 
