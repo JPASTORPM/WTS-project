@@ -33,10 +33,9 @@ This work was designed by a project in R, for proper operation must download all
 - RStudio version 1.2.5019
 
 
-### Packages: Automated Package Installation
+### Automated Package Installation
 
 To the processing of the database and execution of all statistical and graphical analysis, all the following R packages must be installed.
-_Package needed from the beginning and end of the WTS-project_
 
 ```
 if (!"devtools" %in% installed.packages()[,"Package"]) install.packages("devtools")
