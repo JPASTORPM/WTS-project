@@ -1,7 +1,7 @@
 #------------------------------------------------
 # Script: Wastewater Treatment System (WTS)
 # Autor: Junior Pastor Pérez-Molina
-# Date: 09-03-2020 / mm-dd-yyyy
+# Date: 04-13-2020 / mm-dd-yyyy
 # Version: 0.1.0
 #------------------------------------------------
 
@@ -12,12 +12,15 @@
 rm(list = ls()) # Remove all objects
 graphics.off()  # Remove all graphics
 cat("\014")     # Remove  console scripts
+getwd()
+#setwd("C:/Users/Junior/Google Drive/Projects_Github/Project_HAs/WTS-project")
+#setwd("C:/Users/jpast/Google Drive/Projects_Github/Project_HAs/WTS-project")
 #------------------------------------------------
 
 
 
 #------------------------------------------------
-# Packages: Automated Package Installation
+# Automated Package Installation
 #------------------------------------------------
 # install devtools, if it is not installed on your computer
 if (!"devtools" %in% installed.packages()[,"Package"]) install.packages("devtools")
@@ -38,17 +41,149 @@ out <- lapply(pkg, function(y) {
 
 
 
+
+
+#################################################
+# Parte I: Physicochemical parameters in- and out-flow (Control & Pennisetum)
+#################################################
+
+
 #------------------------------------------------
 # Loading - Database
 #------------------------------------------------
-dat<-read_excel("Data/Data.xlsx", sheet = "Data_Physicochemical")
+physicochemical<-read_excel("Data/physicochemical.xlsx", sheet = "physicochemical")
+physicochemical<-data.frame(physicochemical)
+physicochemical$date<-as.Date(physicochemical$date)
+head(physicochemical)
+#------------------------------------------------
+
+
+#------------------------------------------------
+# Table. Physicochemical parameters water in- and out-flow (Control & Pennisetum)
+#------------------------------------------------
+fun.table.anova<-function(name.variable, var, variable, data){
+  
+  model = aov(variable ~ treatment, data= data)
+  sw<-shapiro.test(model$residuals)
+  
+  if (sw$p.value>0.05) {
+    summary_model<-summary(model)
+    inf<-round(glance(model),3)
+    P.value<-round(as.numeric(inf[5]),3)
+    R2<-round(as.numeric(inf[1]),2)
+    F<-round(as.numeric(inf[4]),1)
+    
+    
+    lsm = lsmeans(model, pairwise ~ treatment, adjust="LSD")
+    t1<-data.frame(cld(lsm[[1]], alpha=.05, Letters=letters))
+    t2<-data.frame(t1[c(1)],t1[c(2)],t1[c(3)],t1[c(7)])
+    t2 = t2[with(t2, order(treatment)), ]
+    
+    sum = summarySE(data, measurevar= var, groupvars=c("treatment"), na.rm=TRUE)
+    sum<-sum[c(5)]
+    sum<-data.frame(sum)
+    names(sum)<-c("SE")
+    sum
+    t2$SE<-sum$SE
+    
+    t2$treatment<-as.character(t2$treatment)
+    
+    data.anova<-data.frame()
+    data.anova1 <- rbind(data.anova,data.frame(Variable=name.variable,  "In-flow"=paste(round(t2[1,2],3), " ± ", round(t2[1,3],3), " ", t2[1,4]),
+                                               "Control"=paste(round(t2[2,2],3), " ± ", round(t2[2,3],3), " ", t2[2,4]),
+                                               "Pennisetum"=paste(round(t2[3,2],3), " ± ", round(t2[3,3],3), " ", t2[3,4]),
+                                               "F or KW*"=F, "R2"=as.character(R2), "P"=P.value))
+  } else {
+
+  model = kruskal.test(variable ~ treatment, data= data)
+  
+  F=round(model$statistic, 2)
+  P.value=round(model$p.value, 3)
+  R2<-"---"
+  
+  a<-pairwise.wilcox.test(as.numeric(variable), as.factor(data$treatment), p.adjust.method = "none")
+  tri.to.squ<-function(x){
+    rn<-row.names(x)
+    cn<-colnames(x)
+    an<-unique(c(cn,rn))
+    myval<-x[!is.na(x)]
+    mymat<-matrix(1,nrow=length(an),ncol=length(an),dimnames=list(an,an))
+    for(ext in 1:length(cn))
+    {
+      for(int in 1:length(rn))
+      {
+        if(is.na(x[row.names(x)==rn[int],colnames(x)==cn[ext]])) next
+        mymat[row.names(mymat)==rn[int],colnames(mymat)==cn[ext]]<-x[row.names(x)==rn[int],colnames(x)==cn[ext]]
+        mymat[row.names(mymat)==cn[ext],colnames(mymat)==rn[int]]<-x[row.names(x)==rn[int],colnames(x)==cn[ext]]
+      }
+      
+    }
+    return(mymat)
+  }
+  mymat<-tri.to.squ(a$p.value)
+  myletters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)
+  sum4<-(data.frame(myletters$Letters))
+  
+  
+  sum = summarySE(data, measurevar= var, groupvars=c("treatment"), na.rm=TRUE)
+  t2<-data.frame(sum[c(1)], sum[c(3)], sum[c(5)], "group"=as.character(sum4$myletters.Letters))
+  t2$treatment<-as.character(t2$treatment)
+
+  data.anova<-data.frame()
+  data.anova1 <- rbind(data.anova,data.frame(Variable=name.variable,  "In-flow"=paste(round(t2[1,2],3), " ± ", round(t2[1,3],3), " ", t2[1,4]),
+                                                                      "Control"=paste(round(t2[2,2],3), " ± ", round(t2[2,3],3), " ", t2[2,4]),
+                                                                      "Pennisetum"=paste(round(t2[3,2],3), " ± ", round(t2[3,3],3), " ", t2[3,4]),
+                                                                      "F or KW*"=F, "R2"=as.character(R2), "P"=P.value))
+  
+  return(data.anova1)
+  }
+
+}
+#------------------------------------------------
+
+turbidity<-fun.table.anova(name.variable="Turbidity", var="turbidity", variable=physicochemical$turbidity, data=physicochemical)
+BOD<-fun.table.anova(name.variable="BOD", var="BOD", variable=physicochemical$BOD, data=physicochemical)
+COD<-fun.table.anova(name.variable="COD", var="COD", variable=physicochemical$COD, data=physicochemical)
+BOD_COD<-fun.table.anova(name.variable="BOD:COD ratio", var="BOD_COD", variable=physicochemical$BOD_COD, data=physicochemical)
+NTK<-fun.table.anova(name.variable="NTK", var="NTK", variable=physicochemical$NTK, data=physicochemical)
+N.NH4<-fun.table.anova(name.variable="N-NH4", var="N.NH4", variable=physicochemical$N.NH4, data=physicochemical)
+N_org<-fun.table.anova(name.variable="N-org.", var="N_org", variable=physicochemical$N_org, data=physicochemical)
+P.PO4.3<-fun.table.anova(name.variable="P-PO43", var="P.PO4.3", variable=physicochemical$P.PO4.3, data=physicochemical)
+
+Table_1<-merge(turbidity,BOD, all=TRUE)
+Table_1<-merge(Table_1,COD, all=TRUE)
+Table_1<-merge(Table_1,BOD_COD, all=TRUE)
+Table_1<-merge(Table_1,NTK, all=TRUE)
+Table_1<-merge(Table_1,N.NH4, all=TRUE)
+Table_1<-merge(Table_1,N_org, all=TRUE)
+Table_1<-merge(Table_1,P.PO4.3, all=TRUE)
+Table_1
+#------------------------------------------------
+write.xlsx(Table_1, "Results/Table. One-way ANOVA.xlsx",
+           sheetName="Table 1",col.names=TRUE,
+           row.names=FALSE, append=FALSE,
+           showNA=TRUE, password=NULL)
+#------------------------------------------------
+
+
+
+
+
+#################################################
+# Parte II: Physicochemical parameters in piezometers (Spatial distribution)
+#################################################
+
+
+#------------------------------------------------
+# Loading - Database
+#------------------------------------------------
+dat<-read_excel("Data/spatial_distribution.xlsx", sheet = "spatial_distribution")
 dat<-data.frame(dat)
-dat$Rep<-format(dat$Rep,"%H:%M:%S")
-dat$Fecha<-as.Date(dat$Fecha)
-pe<-dat[dat$Tratamiento=="Entrada", ]
-ps_p<-dat[dat$Tratamiento=="Salida Pennisetum", ]
-ps_c<-dat[dat$Tratamiento=="Salida Control", ]
-str(dat)
+dat$rep<-format(dat$rep,"%H:%M:%S")
+dat$date<-as.Date(dat$date)
+pe<-dat[dat$treatment=="In-flow", ]
+ps_p<-dat[dat$treatment =="Out-flow Pennisetum", ]
+ps_c<-dat[dat$treatment =="Out-flow Control", ]
 head(dat)
 #------------------------------------------------
 
@@ -59,15 +194,14 @@ head(dat)
 #------------------------------------------------
 g<-merge(pe, ps_c, all=TRUE)
 g<-merge(g, ps_p, all=TRUE)
-g$Tratamiento_Fecha<-paste(g$Tratamiento, g$Fecha, sep="*")
-g$Tratamiento_Fecha_Rep<-paste(g$Tratamiento_Fecha, g$Rep, sep="*")
-g$Fecha<-as.factor(g$Fecha)
-g$Rep<-as.factor(g$Rep)
-g$Tratamiento<-as.factor(g$Tratamiento)
-str(g)
+g$treatment_date<-paste(g$treatment, g$date, sep="*")
+g$treatment_date_Rep<-paste(g$treatment_date, g$rep, sep="*")
+g$date<-as.factor(g$date)
+g$rep<-as.factor(g$rep)
+g$treatment<-as.factor(g$treatment)
 head(g)
 #------------------------------------------------
-fun.table<-function(model1, model2,Variable){
+fun.table<-function(model1, model2, variable){
   shapiro.test(model1$residuals)
   inf<-round(glance(model1),3)
   P.value<-round(as.numeric(inf[5]),3)
@@ -81,29 +215,29 @@ fun.table<-function(model1, model2,Variable){
   P<-data.frame(round(coef$`Pr(>F)`,3))
   P<-data.frame(t(P))
   
-  sum = summarySE(g, measurevar= Variable, groupvars=c("Tratamiento"), na.rm=TRUE)
+  sum = summarySE(g, measurevar= variable, groupvars=c("treatment"), na.rm=TRUE)
   sum<-sum[c(1,2,3,5,6)]
   sum<-data.frame(sum)
-  sum<-data.frame(Sistema= sum$Tratamiento, mean=paste(round(sum[,3], 1), round(sum[,4], 2), sep=" ± "))
+  sum<-data.frame(Sistema= sum$treatment, mean=paste(round(sum[,3], 1), round(sum[,4], 2), sep=" ± "))
   sum<-data.frame(t(sum))
-  names(sum)<-c("Entrada", "Salida Control","Salida Pennisetum")
+  names(sum)<-c("Out-flow", "In-flow Control","In-flow Pennisetum")
   sum<-sum[-1,]
   
   if(P[,3]<0.05){
-    lsm = lsmeans(model2, pairwise ~ Tratamiento, adjust="LSD")
+    lsm = lsmeans(model2, pairwise ~ treatment, adjust="LSD")
     t1<-data.frame(cld(lsm[[1]], alpha=.05, Letters=letters))
     t2<-data.frame(t1[c(1)],t1[c(7)])
-    t2<-t2[order(t2$Tratamiento),]
+    t2<-t2[order(t2$treatment),]
     rm.whitespace <- function (x) gsub("^\\s+|\\s+$", "", x)
     t2$.group<-rm.whitespace(t2$.group)
   } else {
-    t2<-data.frame(Tratamiento=c("","",""),".group"=c("","",""))
+    t2<-data.frame(treatment=c("","",""),".group"=c("","",""))
   }
   
-  p<-data.frame(Variable=Variable,Fecha=P[,1],Hora=P[,2],Sistema=P[,3],
-                Entrada=paste(sum[1,1], t2[1,2], sep=" "), 
-                "Salida Control"=paste(sum[1,2], t2[2,2], sep=" "),
-                "Salida Pennisetum"=paste(sum[1,3], t2[3,2], sep=" "),
+  p<-data.frame(Variable=variable,Date=P[,1],Time=P[,2],System=P[,3],
+                "Out-flow"=paste(sum[1,1], t2[1,2], sep=" "), 
+                "In-flow Control"=paste(sum[1,2], t2[2,2], sep=" "),
+                "In-flow Pennisetum"=paste(sum[1,3], t2[3,2], sep=" "),
                 R2, F, P.value)
   s<-ifelse(p[,c(2,3,4)]<0.001, "***",
             ifelse(p[,c(2,3,4)]<0.01, "**",
@@ -114,34 +248,34 @@ fun.table<-function(model1, model2,Variable){
   return(p)
 }
 #------------------------------------------------
-OD_es<-aov(OD ~  Fecha + Rep + Tratamiento, data=g)
-OD_es2<-aov(OD ~  Tratamiento, data=g)
-OD_t<-fun.table(model1=OD_es, model2= OD_es2,Variable="OD")
+DO_es<-aov(DO ~  date + rep + treatment, data=g)
+DO_es2<-aov(DO ~  treatment, data=g)
+DO_t<-fun.table(model1=DO_es, model2= DO_es2,variable="DO")
 #------------------------------------------------
-pH_es<-aov(pH ~  Fecha + Rep + Tratamiento, data=g)
-pH_es2<-aov(pH ~  Tratamiento, data=g)
-pH_t<-fun.table(model1=pH_es, model2= pH_es2,Variable="pH")
+pH_es<-aov(pH ~  date + rep + treatment, data=g)
+pH_es2<-aov(pH ~  treatment, data=g)
+pH_t<-fun.table(model1=pH_es, model2= pH_es2,variable="pH")
 #------------------------------------------------
-ORP_es<-aov(ORP ~  Fecha + Rep + Tratamiento, data=g)
-ORP_es2<-aov(ORP ~  Tratamiento, data=g)
-ORP_t<-fun.table(model1=ORP_es, model2= ORP_es2,Variable="ORP")
-#------------------------------------------------ *
-Temperatura_es<-aov(Temperatura ~  Fecha + Rep + Tratamiento, data=g)
-Temperatura_es2<-aov(Temperatura ~  Tratamiento, data=g)
-Temperatura_t<-fun.table(model1=Temperatura_es, model2= Temperatura_es2,Variable="Temperatura")
+ORP_es<-aov(ORP ~  date + rep + treatment, data=g)
+ORP_es2<-aov(ORP ~  treatment, data=g)
+ORP_t<-fun.table(model1=ORP_es, model2= ORP_es2,variable="ORP")
 #------------------------------------------------
-Conductividad_es<-aov(Conductividad ~  Fecha + Rep + Tratamiento, data=g)
-Conductividad_es2<-aov(Conductividad ~  Tratamiento, data=g)
-Conductividad_t<-fun.table(model1=Conductividad_es, model2= Conductividad_es2,Variable="Conductividad")
+Temperature_es<-aov(temperature ~  date + rep + treatment, data=g)
+Temperature_es2<-aov(temperature ~  treatment, data=g)
+Temperature_t<-fun.table(model1=Temperature_es, model2= Temperature_es2,variable="temperature")
 #------------------------------------------------
-Cuadro_1<-merge(ORP_t, Conductividad_t, all = TRUE)
-Cuadro_1<-merge(Cuadro_1, OD_t, all = TRUE)
-Cuadro_1<-merge(Cuadro_1, Temperatura_t, all = TRUE)
-Cuadro_1<-merge(Cuadro_1, pH_t, all = TRUE)
-Cuadro_1
+Conductivity_es<-aov(conductivity ~  date + rep + treatment, data=g)
+Conductivity_es2<-aov(conductivity ~  treatment, data=g)
+Conductivity_t<-fun.table(model1=Conductivity_es, model2= Conductivity_es2,variable="conductivity")
 #------------------------------------------------
-write.xlsx(Cuadro_1, "Results/Table. Three-way ANOVA.xlsx",
-           sheetName="Table 1",col.names=TRUE,
+Table_2<-merge(ORP_t, Conductivity_t, all = TRUE)
+Table_2<-merge(Table_2, DO_t, all = TRUE)
+Table_2<-merge(Table_2, Temperature_t, all = TRUE)
+Table_2<-merge(Table_2, pH_t, all = TRUE)
+Table_2
+#------------------------------------------------
+write.xlsx(Table_2, "Results/Table. Three-way ANOVA.xlsx",
+           sheetName="Table 2",col.names=TRUE,
            row.names=FALSE, append=FALSE,
            showNA=TRUE, password=NULL)
 #------------------------------------------------
@@ -151,63 +285,28 @@ write.xlsx(Cuadro_1, "Results/Table. Three-way ANOVA.xlsx",
 #------------------------------------------------
 # Table. Comparison row and column within each system 
 #------------------------------------------------
-dat$Columna<-dat$Punto
-dat$Fila<-dat$Punto
-
-dat$Columna[dat$Punto==1]<-2.70
-dat$Columna[dat$Punto==2]<-5.95
-dat$Columna[dat$Punto==3]<-9.2
-
-dat$Columna[dat$Punto==4]<-2.70
-dat$Columna[dat$Punto==5]<-5.95
-dat$Columna[dat$Punto==6]<-9.2
-
-dat$Columna[dat$Punto==7]<-2.70
-dat$Columna[dat$Punto==8]<-5.95
-dat$Columna[dat$Punto==9]<-9.2
-
-dat$Columna[dat$Punto==10]<-2.70
-dat$Columna[dat$Punto==11]<-5.95
-dat$Columna[dat$Punto==12]<-9.2
-
-dat$Fila[dat$Punto==1]<-2.80
-dat$Fila[dat$Punto==2]<-2.80
-dat$Fila[dat$Punto==3]<-2.80
-
-dat$Fila[dat$Punto==4]<-7.15
-dat$Fila[dat$Punto==5]<-7.15
-dat$Fila[dat$Punto==6]<-7.15
-
-dat$Fila[dat$Punto==7]<-11.5
-dat$Fila[dat$Punto==8]<-11.5
-dat$Fila[dat$Punto==9]<-11.5
-
-dat$Fila[dat$Punto==10]<-15.85
-dat$Fila[dat$Punto==11]<-15.85
-dat$Fila[dat$Punto==12]<-15.85
-#------------------------------------------------
-e<-as.numeric(c(row.names(dat[dat$Tratamiento=="Entrada",]),
-           row.names(dat[dat$Tratamiento=="Salida Control",]),
-           row.names(dat[dat$Tratamiento=="Salida Pennisetum",])))
+e<-as.numeric(c(row.names(dat[dat$treatment=="In-flow",]),
+           row.names(dat[dat$treatment=="Out-flow Control",]),
+           row.names(dat[dat$treatment=="Out-flow Pennisetum",])))
 dat2<-dat[-c(e),]
 #------------------------------------------------
-ORP_aov<-aov( ORP ~ Columna + Fila, data=dat2)
+ORP_aov<-aov( ORP ~ x + y, data=dat2)
 summary.lm(ORP_aov)
 shapiro.test(ORP_aov$residuals)
 #------------------------------------------------
-Conductividad_aov<-aov( Conductividad ~ Columna + Fila, data=dat2)
-summary.lm(Conductividad_aov)
-shapiro.test(Conductividad_aov$residuals)
+Conductivity_aov<-aov( conductivity ~ x + y, data=dat2)
+summary.lm(Conductivity_aov)
+shapiro.test(Conductivity_aov$residuals)
 #------------------------------------------------
-OD_aov<-aov( OD ~ Columna + Fila, data=dat2)
-summary.lm(OD_aov)
-shapiro.test(OD_aov$residuals)
+DO_aov<-aov( DO ~ x + y, data=dat2)
+summary.lm(DO_aov)
+shapiro.test(DO_aov$residuals)
 #------------------------------------------------
-Temperatura_aov<-aov( Temperatura ~ Columna + Fila, data=dat2)
-summary.lm(Temperatura_aov)
-shapiro.test(Temperatura_aov$residuals)
+Temperature_aov<-aov( temperature ~ x + y, data=dat2)
+summary.lm(Temperature_aov)
+shapiro.test(Temperature_aov$residuals)
 #------------------------------------------------
-pH_aov<-aov( pH ~ Fila, data=dat2)
+pH_aov<-aov( pH ~ y, data=dat2)
 summary.lm(pH_aov)
 shapiro.test(pH_aov$residuals)
 #------------------------------------------------
@@ -215,17 +314,17 @@ shapiro.test(pH_aov$residuals)
 
 
 #------------------------------------------------
-# Fig. Spatial Analysis
+# Fig. Spatial distribution
 #------------------------------------------------
-fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig.name){
+fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variable, fig.name){
   #-------------------
-  sum = summarySE(data, measurevar= Variable, groupvars=c("Tratamiento", "Punto"), na.rm=TRUE)
+  sum = summarySE(data, measurevar= variable, groupvars=c("treatment", "piezometer"), na.rm=TRUE)
   sum<-sum[,c(1,2,3,4,6,7)]
-  sum<-data.frame(Variable, sum)
-  names(sum)<-c("Variable","Tratamiento","Punto","N","Mean","S.E.","C.I.95")
+  sum<-data.frame(variable, sum)
+  names(sum)<-c("variable","treatment","piezometer","N","Mean","S.E.","C.I.95")
   sum
-  sum1<-matrix(sum$Mean[sum$Tratamiento=="Control"],nrow = 3, ncol = 4)
-  sum2<-matrix(sum$Mean[sum$Tratamiento=="Pennisetum"],nrow = 3, ncol = 4)
+  sum1<-matrix(sum$Mean[sum$treatment=="Control"],nrow = 3, ncol = 4)
+  sum2<-matrix(sum$Mean[sum$treatment=="Pennisetum"],nrow = 3, ncol = 4)
   #-------------------
   pdf(paste("Results/",fig.name,".pdf"), width=10, height=10)
   layout(matrix(c(1,1, 2,2, 3,3, 4,4,
@@ -234,39 +333,46 @@ fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig
                   0,0, 0,0, 0,0, 0,0,
                   0,0, 0,0, 0,0, 0,0), nrow = 5, byrow=T))
   pm <- par("mfrow")
+  #-------------------
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(1.5,4,1.5,1))
-  boxplot(var1 ~ dat$Fila[dat$Tratamiento=="Control"], xlab=Variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
-  #-------------------
-  x=c(2.70, 5.95, 9.2)
-  y=c(2.8, 7.15, 11.5, 15.85)
-  #-------------------
+  boxplot(variable1 ~ dat$y[dat$treatment=="Control"], xlab= variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
+
+  x<-data.frame(table(dat$x))
+  x<-as.numeric(as.character(x$Var1))
+  y<-data.frame(table(dat$y))
+  y<-as.numeric(as.character(y$Var1))
+  
   par(xpd = TRUE, mgp = c(1.5,0.5,0), mar = c(1.5,0.5,2,2.5)) #contour = list(lwd = 2, col = jet.col(11))
   obj<- list( x= x, y=y, z= sum1)
   set.seed(123)
   grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
   m<-interp.surface.grid(obj, grid.list)
-  image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = tratamiento1, clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
-  grid <- mesh(dat$Columna, dat$Fila)
+  image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = treatment1, clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
+  grid <- mesh(dat$x, dat$y)
   points(grid, pch=3, lwd=2, cex=1, col="White")
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(1.5,4,1.5,1))
-  boxplot(var2 ~ dat$Fila[dat$Tratamiento=="Pennisetum"],  xlab=Variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
+  boxplot(variable2 ~ dat$y[dat$treatment=="Pennisetum"],  xlab=variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
   par(xpd = TRUE, mgp = c(1.5,0.5,0), mar = c(1.5,0.5,2,2.5)) #contour = list(lwd = 2, col = jet.col(11))
   obj<- list( x= x, y=y, z= sum2)
   set.seed(123)
   grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
   m<-interp.surface.grid(obj, grid.list)
   image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = "Pennisetum", clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
-  grid <- mesh(dat$Columna, dat$Fila)
+  grid <- mesh(dat$x, dat$y)
   points(grid, pch=3, lwd=2, cex=1, col="White")
   
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
-  boxplot(var1 ~ dat$Columna[dat$Tratamiento=="Control"],  ylab=Variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
+  boxplot(variable1 ~ dat$x[dat$treatment=="Control"],  ylab=variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
   
-  
+  #------------------- 
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
-  boxplot(var2 ~ dat$Columna[dat$Tratamiento=="Pennisetum"],  ylab=Variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
+  boxplot(variable2 ~ dat$x[dat$treatment=="Pennisetum"],  ylab=variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
   
-  #------------------------------------------------
+  x<-data.frame(table(dat$x))
+  x<-as.numeric(as.character(x$Var1))
+  y<-data.frame(table(dat$y))
+  y<-as.numeric(as.character(y$Var1))
+  
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(0,0,0,0)) #contour = list(lwd = 2, col = jet.col(11))
   obj<- list( x= x, y=y, z= sum1)
   set.seed(123)
@@ -292,9 +398,10 @@ fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig
   lines(XY, lwd = 1, lty = 3)
   
   #-------------------
-  x=c(2.70, 5.95, 9.2)
-  y=c(2.8, 7.15, 11.5, 15.85)
-  #-------------------
+  x<-data.frame(table(dat$x))
+  x<-as.numeric(as.character(x$Var1))
+  y<-data.frame(table(dat$y))
+  y<-as.numeric(as.character(y$Var1))
   
   obj<- list( x= x, y=y, z= sum2)
   set.seed(123)
@@ -323,11 +430,44 @@ fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig
   return(sum)
 }
 #------------------------------------------------
-ORP<-fun.plot3d(data= dat, var1=dat$ORP[dat$Tratamiento=='Control'],var2=dat$ORP[dat$Tratamiento=='Pennisetum'],tratamiento1= "Control", tratamiento2= "Pennisetum", Variable="ORP", fig.name="Fig. ORP")
-pH<-fun.plot3d(data= dat, var1=dat$pH[dat$Tratamiento=='Control'],var2=dat$pH[dat$Tratamiento=='Pennisetum'],tratamiento1= "Control", tratamiento2= "Pennisetum", Variable="pH", fig.name="Fig. pH")
-OD<-fun.plot3d(data= dat, var1=dat$OD[dat$Tratamiento=='Control'],var2=dat$OD[dat$Tratamiento=='Pennisetum'],tratamiento1= "Control", tratamiento2= "Pennisetum", Variable="OD", fig.name="Fig. OD")
-Temperatura<-fun.plot3d(data= dat, var1=dat$Temperatura[dat$Tratamiento=='Control'],var2=dat$Temperatura[dat$Tratamiento=='Pennisetum'],tratamiento1= "Control", tratamiento2= "Pennisetum", Variable="Temperatura", fig.name="Fig. Temperature")
-Conductividad<-fun.plot3d(data= dat, var1=dat$Conductividad[dat$Tratamiento=='Control'],var2=dat$Conductividad[dat$Tratamiento=='Pennisetum'],tratamiento1= "Control", tratamiento2= "Pennisetum", Variable="Conductividad", fig.name="Fig. Conductivity")
+ORP<-fun.plot3d(data= dat, 
+                variable1=dat$ORP[dat$treatment=='Control'],
+                variable2=dat$ORP[dat$treatment=='Pennisetum'],
+                treatment1= "Control", 
+                treatment2= "Pennisetum", 
+                variable="ORP", 
+                fig.name="Fig. ORP")
+
+pH<-fun.plot3d(data= dat, 
+               variable1=dat$pH[dat$treatment=='Control'],
+               variable2=dat$pH[dat$treatment=='Pennisetum'],
+               treatment1= "Control", 
+               treatment2= "Pennisetum", 
+               variable="pH", 
+               fig.name="Fig. pH")
+
+OD<-fun.plot3d(data= dat, 
+               variable1=dat$DO[dat$treatment=='Control'],
+               variable2=dat$DO[dat$treatment=='Pennisetum'],
+               treatment1= "Control", 
+               treatment2= "Pennisetum", 
+               variable="DO", 
+               fig.name="Fig. DO")
+
+Temperature<-fun.plot3d(data= dat, 
+                        variable1=dat$temperature[dat$treatment=='Control'],
+                        variable2=dat$temperature[dat$treatment=='Pennisetum'],
+                        treatment1= "Control", treatment2= "Pennisetum", 
+                        variable="temperature", 
+                        fig.name="Fig. Temperature")
+
+ConductiviTY<-fun.plot3d(data= dat, 
+                         variable1=dat$conductivity[dat$treatment=='Control'],
+                         variable2=dat$conductivity[dat$treatment=='Pennisetum'],
+                         treatment1= "Control", 
+                         treatment2= "Pennisetum", 
+                         variable="conductivity", 
+                         fig.name="Fig. Conductivity")
 #------------------------------------------------
 
 
@@ -335,19 +475,16 @@ Conductividad<-fun.plot3d(data= dat, var1=dat$Conductividad[dat$Tratamiento=='Co
 #------------------------------------------------
 # Fig. Spearman - Correlations
 #------------------------------------------------
-d <- dat2[, c(3, 5:9)]
-str(d)
+d <- dat2[, c(3, 7:11)]
+head(d)
 d<-na.omit(d)
-names(d)<-c("Tratamiento","pH","OD","Temp","ORP","Cond")
-d<-d[order(d$Tratamiento),]
+names(d)<-c("treatment","pH","OD","Temp","ORP","Cond")
+d<-d[order(d$treatment),]
 d2<-d[,1]
 d<-d[,-1]
 
 hc <- hclust(as.dist(1-cor(d, method='spearman', use='pairwise.complete.obs')))
-hc$height
 hc.order <- order.dendrogram(as.dendrogram(hc))
-#d <- d[ ,hc]
-d[ ,hc.order]
 gr <- as.factor(d2)
 
 cols.key <- scales::muted(c('black', 'black'))
@@ -382,10 +519,10 @@ panel.scatter <- function(x, y){
 }
 #------------------------------------------------
 pdf(file = "Results/Fig. Spearman correlations by treatment.pdf", width = 4.5*2, height = 4.5*1.75) # Este considera todos los valores, no excluye valores NA de la matrix de datos, por lo tanto, más datos
-dat3<-dat2[,c(3, 5:9)]
-dat3$Grupo<-dat3$Tratamiento
-dat3$Grupo[dat3$Tratamiento=="Control"]<-"C"
-dat3$Grupo[dat3$Tratamiento=="Pennisetum"]<-"P"
+dat3<-dat2[,c(3, 7:11)]
+dat3$Grupo<-dat3$treatment
+dat3$Grupo[dat3$treatment=="Control"]<-"C"
+dat3$Grupo[dat3$treatment=="Pennisetum"]<-"P"
 dat3 %>% ggpairs(.,legend = 1,columns = 2:6,mapping = ggplot2::aes(colour=Grupo),upper = list(continuous = wrap('cor', method = "spearman")),
   lower = list(continuous = wrap("smooth", alpha = 0.5, size=2, pch=c(19)))) +
   theme(legend.position = "bottom") +
@@ -399,39 +536,39 @@ dev.off()
 # Fig. PCA
 #------------------------------------------------
 df.PCA<-dat2
-df.PCA<-df.PCA[,c(-1,-2,-4,-10)]
+df.PCA<-df.PCA[,c(-1,-2,-4,-5)]
 head(df.PCA)
-names(df.PCA)<-c("Tratamiento","pH", "OD", "Temperature", "ORP", "Conductivity", "Fila")
+names(df.PCA)<-c("treatment","y","pH", "OD", "Temperature", "ORP", "Conductivity")
 df.PCA<-na.omit(df.PCA)
-df.PCA = df.PCA[with(df.PCA, order(-ORP)), ] # df.PCA$Fila==15.85
+df.PCA = df.PCA[with(df.PCA, order(-ORP)), ] # df.PCA$y==15.85
 #------------------------------------------------
-res.pca1 <- prcomp(df.PCA[, c(-1,-7)], scale = TRUE) # Remove Treatment and TDM
+res.pca1 <- prcomp(df.PCA[, c(-1,-2)], scale = TRUE) # Remove Treatment and TDM
 quali.sup <- as.factor(df.PCA[, c(1)]) # Only treatment
 
 a1<-fviz_pca_biplot(res.pca1, geom = c("point"), title="",habillage = quali.sup, addEllipses = TRUE, ellipse.level = 0.95) 
 a1<- a1 + theme_minimal()
 a1<- a1 +  scale_shape_manual(values = c(1,19))
 
-res.pca1 <- prcomp(df.PCA[df.PCA$Fila==2.80, c(-1,-7)], scale = TRUE) # Remove Treatment and TDM
-quali.sup <- as.factor(df.PCA[df.PCA$Fila==2.80, c(1)]) # Only treatment
+res.pca1 <- prcomp(df.PCA[df.PCA$y==2.80, c(-1,-2)], scale = TRUE) # Remove Treatment and TDM
+quali.sup <- as.factor(df.PCA[df.PCA$y==2.80, c(1)]) # Only treatment
 af1<-fviz_pca_biplot(res.pca1, geom = c("point"), title="",habillage = quali.sup, addEllipses = TRUE, ellipse.level = 0.95) 
 af1<- af1 + theme_minimal()
 af1<- af1 +  scale_shape_manual(values = c(1,19))
 
-res.pca1 <- prcomp(df.PCA[df.PCA$Fila==7.15, c(-1,-7)], scale = TRUE) # Remove Treatment and TDM
-quali.sup <- as.factor(df.PCA[df.PCA$Fila==7.15, c(1)]) # Only treatment
+res.pca1 <- prcomp(df.PCA[df.PCA$y==7.15, c(-1,-2)], scale = TRUE) # Remove Treatment and TDM
+quali.sup <- as.factor(df.PCA[df.PCA$y==7.15, c(1)]) # Only treatment
 af2<-fviz_pca_biplot(res.pca1, geom = c("point"), title="",habillage = quali.sup, addEllipses = TRUE, ellipse.level = 0.95) 
 af2<- af2 + theme_minimal()
 af2<- af2 +  scale_shape_manual(values = c(1,19))
 
-res.pca1 <- prcomp(df.PCA[df.PCA$Fila==11.50, c(-1,-7)], scale = TRUE) # Remove Treatment and TDM
-quali.sup <- as.factor(df.PCA[df.PCA$Fila==11.50, c(1)]) # Only treatment
+res.pca1 <- prcomp(df.PCA[df.PCA$y==11.50, c(-1,-2)], scale = TRUE) # Remove Treatment and TDM
+quali.sup <- as.factor(df.PCA[df.PCA$y==11.50, c(1)]) # Only treatment
 af3<-fviz_pca_biplot(res.pca1, geom = c("point"), title="",habillage = quali.sup, addEllipses = TRUE, ellipse.level = 0.95) 
 af3<- af3 + theme_minimal()
 af3<- af3 +  scale_shape_manual(values = c(1,19))
 
-res.pca1 <- prcomp(df.PCA[df.PCA$Fila==15.85, c(-1,-7)], scale = TRUE) # Remove Treatment and TDM
-quali.sup <- as.factor(df.PCA[df.PCA$Fila==15.85, c(1)]) # Only treatment
+res.pca1 <- prcomp(df.PCA[df.PCA$y==15.85, c(-1,-2)], scale = TRUE) # Remove Treatment and TDM
+quali.sup <- as.factor(df.PCA[df.PCA$y==15.85, c(1)]) # Only treatment
 af4<-fviz_pca_biplot(res.pca1, geom = c("point"), title="",habillage = quali.sup, addEllipses = TRUE, ellipse.level = 0.95) 
 af4<- af4 + theme_minimal()
 af4<- af4 +  scale_shape_manual(values = c(1,19))
@@ -450,20 +587,18 @@ dev.off()
 #------------------------------------------------
 # Fig. Time-course
 #------------------------------------------------
-str(g$Rep)
-g$Rep<-as.character(g$Rep)
-g$Time<-as.character(g$Rep)
-g$Time[g$Rep=="08:00:00"]<-"8"
-g$Time[g$Rep=="09:00:00"]<-"9"
-g$Time[g$Rep=="10:00:00"]<-"10"
-g$Time[g$Rep=="11:00:00"]<-"11"
-g$Time[g$Rep=="12:00:00"]<-"12"
-g$Time[g$Rep=="01:00:00"]<-"13"
-g$Time[g$Rep=="02:00:00"]<-"14"
-g$Time[g$Rep=="12:40:00"]<-"12"
-g$Time[g$Rep=="10:40:00"]<-"11"
+g$rep<-as.character(g$rep)
+g$Time<-as.character(g$rep)
+g$Time[g$rep=="08:00:00"]<-"8"
+g$Time[g$rep=="09:00:00"]<-"9"
+g$Time[g$rep=="10:00:00"]<-"10"
+g$Time[g$rep=="11:00:00"]<-"11"
+g$Time[g$rep=="12:00:00"]<-"12"
+g$Time[g$rep=="01:00:00"]<-"13"
+g$Time[g$rep=="02:00:00"]<-"14"
+g$Time[g$rep=="12:40:00"]<-"12"
+g$Time[g$rep=="10:40:00"]<-"11"
 g$Time<- as.numeric(g$Time)
-str(g)
 head(g)
 error.bar.vertical<-function(x, y, se.y, col){arrows(x, y-se.y, x, y+se.y, code=3, angle=90, length=0.1, col=col)}
 #------------------------------------------------
@@ -474,61 +609,60 @@ layout(matrix(c(1,1, 1,1,
                 2,2, 2,2, 
                 3,3, 3,3), nrow = 3, byrow=T))
 #------------------------------------------------
-sum = summarySE(g, measurevar= "ORP", groupvars=c("Time", "Tratamiento"), na.rm=TRUE)
+sum = summarySE(g, measurevar= "ORP", groupvars=c("Time", "treatment"), na.rm=TRUE)
 sum<-sum[,c(1,2,4,6)]
 sum<-data.frame(sum)
-names(sum)<-c("Time","Tratamiento","Mean","S.E.")
+names(sum)<-c("Time","treatment","Mean","S.E.")
 
 par(xpd = FALSE,mgp = c(1.5,0.5,0), mar = c(3,3,1,1))
-plot(sum$Time[sum$Tratamiento=="Entrada"], sum$Mean[sum$Tratamiento=="Entrada"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(-300,300),
+plot(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(-300,300),
      ylab='ORP (mV, ± SE)', xlab='')
-error.bar.vertical(sum$Time[sum$Tratamiento=="Entrada"], sum$Mean[sum$Tratamiento=="Entrada"],
-                   sum$S.E.[sum$Tratamiento=="Entrada"], col = "black")
-points(sum$Time[sum$Tratamiento=="Salida Control"], sum$Mean[sum$Tratamiento=="Salida Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
-error.bar.vertical(sum$Time[sum$Tratamiento=="Salida Control"], sum$Mean[sum$Tratamiento=="Salida Control"],
-                   sum$S.E.[sum$Tratamiento=="Salida Control"], col = "black")
-points(sum$Time[sum$Tratamiento=="Salida Pennisetum"], sum$Mean[sum$Tratamiento=="Salida Pennisetum"],pch=17, type = "l", lwd=2, lty=3, col="darkred")
-error.bar.vertical(sum$Time[sum$Tratamiento=="Salida Pennisetum"], sum$Mean[sum$Tratamiento=="Salida Pennisetum"],
-                   sum$S.E.[sum$Tratamiento=="Salida Pennisetum"], col = "black")
+error.bar.vertical(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],
+                   sum$S.E.[sum$treatment=="In-flow"], col = "black")
+points(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
+error.bar.vertical(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],
+                   sum$S.E.[sum$treatment=="Out-flow Control"], col = "black")
+points(sum$Time[sum$treatment=="Out-flow Pennisetum"], sum$Mean[sum$treatment=="Out-flow Pennisetum"],pch=17, type = "l", lwd=2, lty=3, col="darkred")
+error.bar.vertical(sum$Time[sum$treatment=="Out-flow Pennisetum"], sum$Mean[sum$treatment=="Out-flow Pennisetum"],
+                   sum$S.E.[sum$treatment=="Out-flow Pennisetum"], col = "black")
 abline(h=0, lty=1, lwd=1)
 legend("bottom", c("Inpunt", "Output-Control", "Output-Pennisetum"),lty=c(1, 2, 3),col="darkred",merge = F, bg = NULL,bty='n', h=FALSE, cex=1)
 #------------------------------------------------
-sum = summarySE(g, measurevar= "pH", groupvars=c("Time", "Tratamiento"), na.rm=TRUE)
+sum = summarySE(g, measurevar= "pH", groupvars=c("Time", "treatment"), na.rm=TRUE)
 sum<-sum[,c(1,2,4,6)]
 sum<-data.frame(sum)
-names(sum)<-c("Time","Tratamiento","Mean","S.E.")
+names(sum)<-c("Time","treatment","Mean","S.E.")
 
 par(xpd = FALSE,mgp = c(1.5,0.5,0), mar = c(3,3,1,1))
-plot(sum$Time[sum$Tratamiento=="Entrada"], sum$Mean[sum$Tratamiento=="Entrada"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(6,8),
+plot(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(6,8),
      ylab='pH (± SE)', xlab='Time (hours)')
-error.bar.vertical(sum$Time[sum$Tratamiento=="Entrada"], sum$Mean[sum$Tratamiento=="Entrada"],
-                   sum$S.E.[sum$Tratamiento=="Entrada"], col = "black")
-points(sum$Time[sum$Tratamiento=="Salida Control"], sum$Mean[sum$Tratamiento=="Salida Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
-error.bar.vertical(sum$Time[sum$Tratamiento=="Salida Control"], sum$Mean[sum$Tratamiento=="Salida Control"],
-                   sum$S.E.[sum$Tratamiento=="Salida Control"], col = "black")
-points(sum$Time[sum$Tratamiento=="Salida Pennisetum"], sum$Mean[sum$Tratamiento=="Salida Pennisetum"],pch=17, type = "l", lwd=2, lty=3, col="darkred")
-error.bar.vertical(sum$Time[sum$Tratamiento=="Salida Pennisetum"], sum$Mean[sum$Tratamiento=="Salida Pennisetum"],
-                   sum$S.E.[sum$Tratamiento=="Salida Pennisetum"], col = "black")
+error.bar.vertical(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],
+                   sum$S.E.[sum$treatment=="In-flow"], col = "black")
+points(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
+error.bar.vertical(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],
+                   sum$S.E.[sum$treatment=="Out-flow Control"], col = "black")
+points(sum$Time[sum$treatment=="Out-flow Pennisetum"], sum$Mean[sum$treatment=="Out-flow Pennisetum"],pch=17, type = "l", lwd=2, lty=3, col="darkred")
+error.bar.vertical(sum$Time[sum$treatment=="Out-flow Pennisetum"], sum$Mean[sum$treatment=="Out-flow Pennisetum"],
+                   sum$S.E.[sum$treatment=="Out-flow Pennisetum"], col = "black")
 #------------------------------------------------
 par(xpd = FALSE,mgp = c(1.5,0.5,0), mar = c(3,3,1,1))
-sum = summarySE(g, measurevar= "Temperatura", groupvars=c("Time", "Tratamiento"), na.rm=TRUE)
+sum = summarySE(g, measurevar= "temperature", groupvars=c("Time", "treatment"), na.rm=TRUE)
 sum<-sum[,c(1,2,4,6)]
 sum<-data.frame(sum)
-names(sum)<-c("Time","Tratamiento","Mean","S.E.")
-sum
+names(sum)<-c("Time","treatment","Mean","S.E.")
 error.bar.vertical<-function(x, y, se.y, col){arrows(x, y-se.y, x, y+se.y, code=3, angle=90, length=0.05, col=col)}
 
 par(xpd = FALSE,mgp = c(1.5,0.5,0), mar = c(3,3,1,1))
-plot(sum$Time[sum$Tratamiento=="Entrada"], sum$Mean[sum$Tratamiento=="Entrada"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(22,30),
+plot(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(22,30),
      ylab='Temperature (°C, ± SE)', xlab='Time (hours)')
-error.bar.vertical(sum$Time[sum$Tratamiento=="Entrada"], sum$Mean[sum$Tratamiento=="Entrada"],
-                   sum$S.E.[sum$Tratamiento=="Entrada"], col = "black")
-points(sum$Time[sum$Tratamiento=="Salida Control"], sum$Mean[sum$Tratamiento=="Salida Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
-error.bar.vertical(sum$Time[sum$Tratamiento=="Salida Control"], sum$Mean[sum$Tratamiento=="Salida Control"],
-                   sum$S.E.[sum$Tratamiento=="Salida Control"], col = "black")
-points(sum$Time[sum$Tratamiento=="Salida Pennisetum"], sum$Mean[sum$Tratamiento=="Salida Pennisetum"],pch=17, type = "l", lwd=2, lty=3, col="darkred")
-error.bar.vertical(sum$Time[sum$Tratamiento=="Salida Pennisetum"], sum$Mean[sum$Tratamiento=="Salida Pennisetum"],
-                   sum$S.E.[sum$Tratamiento=="Salida Pennisetum"], col = "black")
+error.bar.vertical(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],
+                   sum$S.E.[sum$treatment=="In-flow"], col = "black")
+points(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
+error.bar.vertical(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],
+                   sum$S.E.[sum$treatment=="Out-flow Control"], col = "black")
+points(sum$Time[sum$treatment=="Out-flow Pennisetum"], sum$Mean[sum$treatment=="Out-flow Pennisetum"],pch=17, type = "l", lwd=2, lty=3, col="darkred")
+error.bar.vertical(sum$Time[sum$treatment=="Out-flow Pennisetum"], sum$Mean[sum$treatment=="Out-flow Pennisetum"],
+                   sum$S.E.[sum$treatment=="Out-flow Pennisetum"], col = "black")
 #------------------------------------------------
 dev.off()
 #------------------------------------------------
@@ -536,3 +670,4 @@ dev.off()
 
 
 # The end
+
