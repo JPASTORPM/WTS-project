@@ -58,15 +58,15 @@ out <- lapply(pkg, function(y) {
 Function for execution of the spatial distribution of the parameter.
 
 ```
-fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig.name){
+fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variable, fig.name){
   #-------------------
-  sum = summarySE(data, measurevar= Variable, groupvars=c("Tratamiento", "Punto"), na.rm=TRUE)
+  sum = summarySE(data, measurevar= variable, groupvars=c("treatment", "piezometer"), na.rm=TRUE)
   sum<-sum[,c(1,2,3,4,6,7)]
-  sum<-data.frame(Variable, sum)
-  names(sum)<-c("Variable","Tratamiento","Punto","N","Mean","S.E.","C.I.95")
+  sum<-data.frame(variable, sum)
+  names(sum)<-c("variable","treatment","piezometer","N","Mean","S.E.","C.I.95")
   sum
-  sum1<-matrix(sum$Mean[sum$Tratamiento=="Control"],nrow = 3, ncol = 4)
-  sum2<-matrix(sum$Mean[sum$Tratamiento=="Pennisetum"],nrow = 3, ncol = 4)
+  sum1<-matrix(sum$Mean[sum$treatment=="Control"],nrow = 3, ncol = 4)
+  sum2<-matrix(sum$Mean[sum$treatment=="Pennisetum"],nrow = 3, ncol = 4)
   #-------------------
   pdf(paste("Results/",fig.name,".pdf"), width=10, height=10)
   layout(matrix(c(1,1, 2,2, 3,3, 4,4,
@@ -75,39 +75,45 @@ fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig
                   0,0, 0,0, 0,0, 0,0,
                   0,0, 0,0, 0,0, 0,0), nrow = 5, byrow=T))
   pm <- par("mfrow")
+  #-------------------
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(1.5,4,1.5,1))
-  boxplot(var1 ~ dat$Fila[dat$Tratamiento=="Control"], xlab=Variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
-  #-------------------
-  x=c(2.70, 5.95, 9.2)
-  y=c(2.8, 7.15, 11.5, 15.85)
-  #-------------------
+  boxplot(variable1 ~ dat$y[dat$treatment=="Control"], xlab= variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
+
+  x<-data.frame(table(dat$x))
+  x<-as.numeric(as.character(x$Var1))
+  y<-data.frame(table(dat$y))
+  y<-as.numeric(as.character(y$Var1))
+  
   par(xpd = TRUE, mgp = c(1.5,0.5,0), mar = c(1.5,0.5,2,2.5)) #contour = list(lwd = 2, col = jet.col(11))
   obj<- list( x= x, y=y, z= sum1)
   set.seed(123)
   grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
   m<-interp.surface.grid(obj, grid.list)
-  image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = tratamiento1, clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
-  grid <- mesh(dat$Columna, dat$Fila)
+  image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = treatment1, clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
+  grid <- mesh(dat$x, dat$y)
   points(grid, pch=3, lwd=2, cex=1, col="White")
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(1.5,4,1.5,1))
-  boxplot(var2 ~ dat$Fila[dat$Tratamiento=="Pennisetum"],  xlab=Variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
+  boxplot(variable2 ~ dat$y[dat$treatment=="Pennisetum"],  xlab=variable, ylab= "Row: Distance (m)",horizontal=TRUE, col="gray45")
   par(xpd = TRUE, mgp = c(1.5,0.5,0), mar = c(1.5,0.5,2,2.5)) #contour = list(lwd = 2, col = jet.col(11))
   obj<- list( x= x, y=y, z= sum2)
   set.seed(123)
   grid.list<- list( x= seq( min(x),max(x),,100), y=  seq( min(y),max(y),,100))
   m<-interp.surface.grid(obj, grid.list)
   image2D(z = m, lwd = 3, shade = 0.2, rasterImage = TRUE, contour=TRUE, main = "Pennisetum", clab = sum$Variable[1], xlab="", ylab="") # Scale grays use "col=hcl.colors(100, "Grays")"
-  grid <- mesh(dat$Columna, dat$Fila)
+  grid <- mesh(dat$x, dat$y)
   points(grid, pch=3, lwd=2, cex=1, col="White")
   
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
-  boxplot(var1 ~ dat$Columna[dat$Tratamiento=="Control"],  ylab=Variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
-  
-  
+  boxplot(variable1 ~ dat$x[dat$treatment=="Control"],  ylab=variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
+  #------------------- 
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
-  boxplot(var2 ~ dat$Columna[dat$Tratamiento=="Pennisetum"],  ylab=Variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
+  boxplot(variable2 ~ dat$x[dat$treatment=="Pennisetum"],  ylab=variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
   
-  #------------------------------------------------
+  x<-data.frame(table(dat$x))
+  x<-as.numeric(as.character(x$Var1))
+  y<-data.frame(table(dat$y))
+  y<-as.numeric(as.character(y$Var1))
+  
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(0,0,0,0)) #contour = list(lwd = 2, col = jet.col(11))
   obj<- list( x= x, y=y, z= sum1)
   set.seed(123)
@@ -131,11 +137,11 @@ fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig
   lines(XY, lwd = 1, lty = 3)
   XY <- trans3D(x = x, y = rep(50, nrow(m$z)), z = m$z[,50], pmat = pmat)
   lines(XY, lwd = 1, lty = 3)
-  
   #-------------------
-  x=c(2.70, 5.95, 9.2)
-  y=c(2.8, 7.15, 11.5, 15.85)
-  #-------------------
+  x<-data.frame(table(dat$x))
+  x<-as.numeric(as.character(x$Var1))
+  y<-data.frame(table(dat$y))
+  y<-as.numeric(as.character(y$Var1))
   
   obj<- list( x= x, y=y, z= sum2)
   set.seed(123)
@@ -163,9 +169,15 @@ fun.plot3d<-function(data, var1, var2, tratamiento1, tratamiento2, Variable, fig
   dev.off()
   return(sum)
 }
-#------------------------------------------------
-ORP<-fun.plot3d(data= dat, var1=dat$ORP[dat$Tratamiento=='Control'],var2=dat$ORP[dat$Tratamiento=='Pennisetum'],tratamiento1= "Control", tratamiento2= "Pennisetum", Variable="ORP", fig.name="Fig. ORP")
-#------------------------------------------------
+
+ORP<-fun.plot3d(data= dat, 
+                variable1=dat$ORP[dat$treatment=='Control'],
+                variable2=dat$ORP[dat$treatment=='Pennisetum'],
+                treatment1= "Control", 
+                treatment2= "Pennisetum", 
+                variable="ORP", 
+                fig.name="Fig. ORP")
+
 ```
 
 ## Built With
