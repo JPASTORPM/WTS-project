@@ -190,6 +190,8 @@ ORP<-fun.plot3d(data= dat,
 
 * **Junior Pastor Pérez-Molina** - *Laboratorio de Ecología Funcional y Ecosistemas Tropicales (LEFET), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599) - [GitHub](https://github.com/JPASTORPM)
 * **Carola Scholz** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.or)
+* **Roy Pérez-Salazar** - *Laboratorio de Gestión de Desechos y Aguas Residuales (LAGEDE), Escuela de Química, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.or)
+* **Carolina Alfaro-Chinchilla** - *Laboratorio de Gestión de Desechos y Aguas Residuales (LAGEDE), Escuela de Química, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.or)
 * **Ana Abarca Méndez** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0001-7815-0568)
 * **Leandro Araya Leitón** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0001-9930-9515)
 * **Jeslyn Carranza Chaves** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-8420-3029)
@@ -198,3 +200,4 @@ ORP<-fun.plot3d(data= dat,
 * **Rachel Ardón Rivera** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-9642-3176)
 * **Sofía Flores Aguilar** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-1736-3655)
 * **Catalina Solís Calderón** - *Laboratorio Nacional de Aguas, Área de Microbiología, Instituto Costarricense de Acueductos y Alcantarillados (AyA), Costa Rica* - [ORCID](https://orcid.or)
+
