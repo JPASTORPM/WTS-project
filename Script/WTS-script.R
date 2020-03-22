@@ -363,7 +363,6 @@ fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variabl
   
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
   boxplot(variable1 ~ dat$x[dat$treatment=="Control"],  ylab=variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
-  
   #------------------- 
   par(xpd = FALSE, mgp = c(1.5,0.5,0), mar = c(3,1,1,3))
   boxplot(variable2 ~ dat$x[dat$treatment=="Pennisetum"],  ylab=variable, xlab= "Column: Distance (m)", horizontal=FALSE, col="gray45")
@@ -396,7 +395,6 @@ fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variabl
   lines(XY, lwd = 1, lty = 3)
   XY <- trans3D(x = x, y = rep(50, nrow(m$z)), z = m$z[,50], pmat = pmat)
   lines(XY, lwd = 1, lty = 3)
-  
   #-------------------
   x<-data.frame(table(dat$x))
   x<-as.numeric(as.character(x$Var1))
