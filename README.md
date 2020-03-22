@@ -7,7 +7,7 @@ This _WTS-project_ in _R_ aimed to evaluate the spatial distribuction of some of
 
 ![Fig. Scheme](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20Scheme.png)
 
-> _Scheme of Constructed wetland of the horizontal sub-superficial flow for wastewater treatment (A: Pennisetum and Control). Images of the substrate and piezometers in both systems (B-C: Pennisetum; and D-E: Control)._
+> _Scheme of Constructed wetland of the horizontal sub-superficial flow for wastewater treatment (A: Pennisetum and Control). Images of the substrate and piezometers in both systems (B-C: Pennisetum; D-E: Control; D: CW-HSF design perspective)._
 
 
 ### Exemples
@@ -68,7 +68,7 @@ fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variabl
   sum1<-matrix(sum$Mean[sum$treatment=="Control"],nrow = 3, ncol = 4)
   sum2<-matrix(sum$Mean[sum$treatment=="Pennisetum"],nrow = 3, ncol = 4)
   #-------------------
-  pdf(paste("Results/",fig.name,".pdf"), width=10, height=10)
+  pdf(paste("Results/",fig.name,".pdf", sep = ""), width=10, height=10)
   layout(matrix(c(1,1, 2,2, 3,3, 4,4,
                   1,1, 2,2, 3,3, 4,4, 
                   7,7, 5,5, 8,8, 6,6,
@@ -170,6 +170,7 @@ fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variabl
   return(sum)
 }
 
+# e.g.
 ORP<-fun.plot3d(data= dat, 
                 variable1=dat$ORP[dat$treatment=='Control'],
                 variable2=dat$ORP[dat$treatment=='Pennisetum'],
@@ -177,7 +178,6 @@ ORP<-fun.plot3d(data= dat,
                 treatment2= "Pennisetum", 
                 variable="ORP", 
                 fig.name="Fig. ORP")
-
 ```
 
 ## Built With
