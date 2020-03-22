@@ -40,12 +40,16 @@ To the processing of the database and execution of all statistical and graphical
 ```
 if (!"devtools" %in% installed.packages()[,"Package"]) install.packages("devtools")
 library(devtools)
+```
 
+```
 pkg <- c("ggplot2","readxl", "openxlsx", "Rmisc",
        "fields","plot3D","yarrr","broom","car","lsmeans",
        "multcompView","multcomp","dplyr","GGally",
        "factoextra","cowplot","ggplot2","grid","gridExtra")
+```
 
+```
 out <- lapply(pkg, function(y) {
   if (!y %in% installed.packages()[, "Package"]) 
     install.packages(y)
@@ -169,8 +173,9 @@ fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variabl
   dev.off()
   return(sum)
 }
-
-# e.g.
+```
+### _e.g._
+```
 ORP<-fun.plot3d(data= dat, 
                 variable1=dat$ORP[dat$treatment=='Control'],
                 variable2=dat$ORP[dat$treatment=='Pennisetum'],
