@@ -170,7 +170,7 @@ write.xlsx(Table_1, "Results/Table. One-way ANOVA.xlsx",
 
 
 #################################################
-# Parte II: Physicochemical parameters in piezometers (Spatial distribution)
+# Parte II: Physicochemical parameters in piezometers (Spatial variation)
 #################################################
 
 
@@ -314,7 +314,7 @@ shapiro.test(pH_aov$residuals)
 
 
 #------------------------------------------------
-# Fig. Spatial distribution
+# Fig. Spatial variation
 #------------------------------------------------
 fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variable, fig.name){
   #-------------------
@@ -326,7 +326,7 @@ fun.plot3d<-function(data, variable1, variable2, treatment1, treatment2, variabl
   sum1<-matrix(sum$Mean[sum$treatment=="Control"],nrow = 3, ncol = 4)
   sum2<-matrix(sum$Mean[sum$treatment=="Pennisetum"],nrow = 3, ncol = 4)
   #-------------------
-  pdf(paste("Results/",fig.name,".pdf"), width=10, height=10)
+  pdf(paste("Results/",fig.name,".pdf", sep = ""), width=10, height=10)
   layout(matrix(c(1,1, 2,2, 3,3, 4,4,
                   1,1, 2,2, 3,3, 4,4, 
                   7,7, 5,5, 8,8, 6,6,
