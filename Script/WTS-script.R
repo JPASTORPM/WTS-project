@@ -1,12 +1,12 @@
 #------------------------------------------------
 # Script: Wastewater Treatment System (WTS)
-# Autor: Junior Pastor Pérez-Molina
-# Date: 04-13-2020 / mm-dd-yyyy
+# Autor: Junior Pastor PÃ©rez-Molina
+# Date: 04-24-2020 / mm-dd-yyyy
 # Version: 0.1.0
 #------------------------------------------------
 
 
-#------------------------------------------------
+#-----------------------------------------------
 # Initial steps
 #------------------------------------------------
 rm(list = ls()) # Remove all objects
@@ -89,9 +89,9 @@ fun.table.anova<-function(name.variable, var, variable, data){
     t2$treatment<-as.character(t2$treatment)
     
     data.anova<-data.frame()
-    data.anova1 <- rbind(data.anova,data.frame(Variable=name.variable,  "In-flow"=paste(round(t2[1,2],3), " ± ", round(t2[1,3],3), " ", t2[1,4]),
-                                               "Control"=paste(round(t2[2,2],3), " ± ", round(t2[2,3],3), " ", t2[2,4]),
-                                               "Pennisetum"=paste(round(t2[3,2],3), " ± ", round(t2[3,3],3), " ", t2[3,4]),
+    data.anova1 <- rbind(data.anova,data.frame(Variable=name.variable,  "In-flow"=paste(round(t2[1,2],3), " Â± ", round(t2[1,3],3), " ", t2[1,4]),
+                                               "Control"=paste(round(t2[2,2],3), " Â± ", round(t2[2,3],3), " ", t2[2,4]),
+                                               "Pennisetum"=paste(round(t2[3,2],3), " Â± ", round(t2[3,3],3), " ", t2[3,4]),
                                                "F or KW*"=F, "R2"=as.character(R2), "P"=P.value))
   } else {
 
@@ -130,9 +130,9 @@ fun.table.anova<-function(name.variable, var, variable, data){
   t2$treatment<-as.character(t2$treatment)
 
   data.anova<-data.frame()
-  data.anova1 <- rbind(data.anova,data.frame(Variable=name.variable,  "In-flow"=paste(round(t2[1,2],3), " ± ", round(t2[1,3],3), " ", t2[1,4]),
-                                                                      "Control"=paste(round(t2[2,2],3), " ± ", round(t2[2,3],3), " ", t2[2,4]),
-                                                                      "Pennisetum"=paste(round(t2[3,2],3), " ± ", round(t2[3,3],3), " ", t2[3,4]),
+  data.anova1 <- rbind(data.anova,data.frame(Variable=name.variable,  "In-flow"=paste(round(t2[1,2],3), " Â± ", round(t2[1,3],3), " ", t2[1,4]),
+                                                                      "Control"=paste(round(t2[2,2],3), " Â± ", round(t2[2,3],3), " ", t2[2,4]),
+                                                                      "Pennisetum"=paste(round(t2[3,2],3), " Â± ", round(t2[3,3],3), " ", t2[3,4]),
                                                                       "F or KW*"=F, "R2"=as.character(R2), "P"=P.value))
   
   return(data.anova1)
@@ -218,7 +218,7 @@ fun.table<-function(model1, model2, variable){
   sum = summarySE(g, measurevar= variable, groupvars=c("treatment"), na.rm=TRUE)
   sum<-sum[c(1,2,3,5,6)]
   sum<-data.frame(sum)
-  sum<-data.frame(Sistema= sum$treatment, mean=paste(round(sum[,3], 1), round(sum[,4], 2), sep=" ± "))
+  sum<-data.frame(Sistema= sum$treatment, mean=paste(round(sum[,3], 1), round(sum[,4], 2), sep=" Â± "))
   sum<-data.frame(t(sum))
   names(sum)<-c("Out-flow", "In-flow Control","In-flow Pennisetum")
   sum<-sum[-1,]
@@ -516,7 +516,7 @@ panel.scatter <- function(x, y){
   lines(lowess(x, y))
 }
 #------------------------------------------------
-pdf(file = "Results/Fig. Spearman correlations by treatment.pdf", width = 4.5*2, height = 4.5*1.75) # Este considera todos los valores, no excluye valores NA de la matrix de datos, por lo tanto, más datos
+pdf(file = "Results/Fig. Spearman correlations by treatment.pdf", width = 4.5*2, height = 4.5*1.75) # Este considera todos los valores, no excluye valores NA de la matrix de datos, por lo tanto, mÃ¡s datos
 dat3<-dat2[,c(3, 7:11)]
 dat3$Grupo<-dat3$treatment
 dat3$Grupo[dat3$treatment=="Control"]<-"C"
@@ -614,7 +614,7 @@ names(sum)<-c("Time","treatment","Mean","S.E.")
 
 par(xpd = FALSE,mgp = c(1.5,0.5,0), mar = c(3,3,1,1))
 plot(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(-300,300),
-     ylab='ORP (mV, ± SE)', xlab='')
+     ylab='ORP (mV, Â± SE)', xlab='')
 error.bar.vertical(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],
                    sum$S.E.[sum$treatment=="In-flow"], col = "black")
 points(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
@@ -633,7 +633,7 @@ names(sum)<-c("Time","treatment","Mean","S.E.")
 
 par(xpd = FALSE,mgp = c(1.5,0.5,0), mar = c(3,3,1,1))
 plot(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(6,8),
-     ylab='pH (± SE)', xlab='Time (hours)')
+     ylab='pH (Â± SE)', xlab='Time (hours)')
 error.bar.vertical(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],
                    sum$S.E.[sum$treatment=="In-flow"], col = "black")
 points(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
@@ -652,7 +652,7 @@ error.bar.vertical<-function(x, y, se.y, col){arrows(x, y-se.y, x, y+se.y, code=
 
 par(xpd = FALSE,mgp = c(1.5,0.5,0), mar = c(3,3,1,1))
 plot(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],pch=19, type = "l", lwd=2, lty=1, col="darkred", ylim=c(22,30),
-     ylab='Temperature (°C, ± SE)', xlab='Time (hours)')
+     ylab='Temperature (Â°C, Â± SE)', xlab='Time (hours)')
 error.bar.vertical(sum$Time[sum$treatment=="In-flow"], sum$Mean[sum$treatment=="In-flow"],
                    sum$S.E.[sum$treatment=="In-flow"], col = "black")
 points(sum$Time[sum$treatment=="Out-flow Control"], sum$Mean[sum$treatment=="Out-flow Control"],pch=15, type = "l", lwd=2, lty=2, col="darkred")
