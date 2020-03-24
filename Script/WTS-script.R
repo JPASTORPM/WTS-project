@@ -13,8 +13,6 @@ rm(list = ls()) # Remove all objects
 graphics.off()  # Remove all graphics
 cat("\014")     # Remove  console scripts
 getwd()
-#setwd("C:/Users/Junior/Google Drive/Projects_Github/Project_HAs/WTS-project")
-#setwd("C:/Users/jpast/Google Drive/Projects_Github/Project_HAs/WTS-project")
 #------------------------------------------------
 
 
