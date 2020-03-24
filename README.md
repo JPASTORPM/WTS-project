@@ -1,4 +1,6 @@
-# Wastewater Treatment System (_WTS_) project
+# Spatial variation of the physicochemical parameters in a constructed wetland for wastewater treatment: An example of the use of the R programming language
+
+## Wastewater Treatment System (_WTS_) project
 
 This _WTS-project_ in _R_ aimed to evaluate the spatial variation of some of the physicochemical parameters in an constructed wetland system for wastewater treatment of sub-superficial flow of _Pennisetum alopecuroides_ (Pennisetum) and a control (unplanted). The purpose is to provide a simple example of an analysis of the spatial dynamics through the use of the R programming language. Each of the cells (Pennisetum and control) had 12 piezometers, organized in three columns and four rows with a separation distance of 3.25m and 4.35m, respectively. It was measured in each of the piezometers the _oxidation-reduction potential (ORP)_, _dissolved oxygen (OD)_, _conductivity_, _pH_ and _water temperature_ (_n_ = 167). The monitoring of the spatial variation of these parameters and other variables could show us if there is any obstruction of the flow and/or possible reduction of the removal by the plants. An open-source repository of R was provided.
 
