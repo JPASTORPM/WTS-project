@@ -204,5 +204,5 @@ ORP<-fun.plot3d(data= dat,
 * **Mariana Elizondo Blanco** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-8408-1543)
 * **Rachel Ardón Rivera** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-9642-3176)
 * **Sofía Flores Aguilar** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0002-1736-3655)
-* **Catalina Solís Calderón** - *Laboratorio Nacional de Aguas, Área de Microbiología, Instituto Costarricense de Acueductos y Alcantarillados (AyA), Costa Rica* - [ORCID](https://orcid.or)
+* **Catalina Solís Calderón** - *Laboratorio Nacional de Aguas, Área de Microbiología, Instituto Costarricense de Acueductos y Alcantarillados (AyA), Costa Rica* - [ORCID](https://orcid.org/0000-0002-7896-9474)
 
