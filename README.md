@@ -194,7 +194,7 @@ ORP<-fun.plot3d(data= dat,
 ## Authors
 
 * **Junior Pastor Pérez-Molina** - *Laboratorio de Ecología Funcional y Ecosistemas Tropicales (LEFET), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3396-0599) - [GitHub](https://github.com/JPASTORPM)
-* **Carola Scholz** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.or)
+* **Carola Scholz** - *Laboratorio de Fitotecnología (LAFITOTEC), Escuela de Ciencias Biológicas, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0001-6570-6360)
 * **Roy Pérez-Salazar** - *Laboratorio de Gestión de Desechos y Aguas Residuales (LAGEDE), Escuela de Química, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-8137-8448)
 * **Carolina Alfaro-Chinchilla** - *Laboratorio de Gestión de Desechos y Aguas Residuales (LAGEDE), Escuela de Química, Universidad Nacional, Costa Rica* - [ORCID](https://orcid.org/0000-0002-3965-0540)
 * **Ana Abarca Méndez** - *Biology student participating in LEFET* - [ORCID](https://orcid.org/0000-0001-7815-0568)
