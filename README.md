@@ -5,7 +5,7 @@ This wastewater treatment system project (_WTS-project_) in _R_ aimed to evaluat
 
 ### Constructed wetland of the horizontal sub-superficial flow (_CW-HSF_)
 
-![Fig. Scheme](https://github.com/JPASTORPM/WTS-project/blob/master/Results/Fig.%20Scheme.png)
+![Fig. Scheme](https://github.com/JPASTORPM/Project_BLRM/blob/master/Results/Fig.%20BLRM.png)
 
 > _Scheme of Constructed wetland of the horizontal sub-superficial flow for wastewater treatment (A: Pennisetum and Control). Images of the substrate and piezometers in both systems (B-C: Pennisetum; D-E: Control; D: CW-HSF design perspective)._
 
